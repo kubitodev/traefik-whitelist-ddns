@@ -14,6 +14,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Bump Version and Push Tag
+        id: autotag
         uses: anothrNick/github-tag-action@1.39.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -29,8 +30,8 @@ jobs:
             docker.io/kubitodev/traefik-ip-whitelist-sync
           tags: |
             # Gets the new_tag output from the previous step
-            type=semver,pattern={{version}},value={{new_tag}}
-            type=semver,pattern={{major}}.{{minor}},value={{new_tag}}
+            type=semver,pattern={{version}},value=${{ steps.autotag.outputs.new_tag }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.autotag.outputs.new_tag }}
           flavor: |
             latest=true
       - name: Setup Docker Buildx
