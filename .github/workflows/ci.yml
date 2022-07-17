@@ -20,6 +20,7 @@ jobs:
           images: |
             docker.io/kubitodev/traefik-ip-whitelist-sync
           tags: |
+            type=semver,pattern={{raw}}
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
           flavor: |
