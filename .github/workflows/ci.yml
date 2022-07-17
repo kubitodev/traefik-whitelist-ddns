@@ -26,7 +26,7 @@ jobs:
           images: |
             docker.io/kubitodev/traefik-ip-whitelist-sync
           tags: |
-            type=edge,branch=main
+            type=ref,event=tag
           flavor: |
             latest=true
       - name: Setup Docker Buildx
