@@ -2,6 +2,8 @@ name: Build and Push Docker Image
 
 on:
   push:
+    branches:
+      - 'main'
     tags:
       - 'v*'
 
@@ -11,6 +13,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Bump Version and Push Tag
+        uses: anothrNick/github-tag-action@1.39.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          RELEASE_BRANCHES: main
+          INITIAL_VERSION: v1.0.0
+          DEFAULT_BUMP: patch
       - name: Generate Docker Metadata
         id: meta
         uses: docker/metadata-action@v3
@@ -18,9 +28,9 @@ jobs:
           images: |
             docker.io/kubitodev/traefik-ip-whitelist-sync
           tags: |
-            type=semver,pattern={{raw}}
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
+            # Gets the new_tag output from the previous step
+            type=semver,pattern={{version}},value={{new_tag}}
+            type=semver,pattern={{major}}.{{minor}},value={{new_tag}}
           flavor: |
             latest=true
       - name: Setup Docker Buildx
@@ -37,7 +47,7 @@ jobs:
         env:
           DOCKER_BUILDKIT: 1
         with:
-          push: true
+          push: ${{ github.event_name != 'pull_request' }}
           context: .
           platforms: linux/amd64,linux/arm64, linux/arm/v7, linux/arm/v8
           tags: ${{ steps.meta.outputs.tags }}
