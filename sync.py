@@ -1,4 +1,5 @@
 import os
+import socket
 
 from pprint import pprint
 from urllib.request import urlopen
@@ -9,14 +10,21 @@ def main():
     config.load_incluster_config()
     api = client.CustomObjectsApi()
 
-    current_ip = urlopen('https://api.ipify.org').read().decode('utf8')
+    custom_domain = os.environ.get('WHITELIST_CUSTOM_DOMAIN')
+
+    current = []
+    public_ip = urlopen('https://api.ipify.org').read().decode('utf8')
+    current.append(public_ip)
+
+    if custom_domain:
+        ip_list = socket.gethostbyname_ex(custom_domain)[2]
+        for ip in ip_list:
+            current.append(ip)
 
     patch_body = {
         "spec": {
             "ipWhiteList": {
-                "sourceRange": [
-                    current_ip
-                ]
+                "sourceRange": current
             }
         }
     }

@@ -18,4 +18,6 @@ spec:
                   value: ip-whitelist
                 - name: WHITELIST_TRAEFIK_NAMESPACE
                   value: traefik-system
+                # - name: WHITELIST_CUSTOM_DOMAIN
+                #   value: example.com
           restartPolicy: OnFailure
